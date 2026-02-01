@@ -83,4 +83,7 @@ object FlyWheel : Subsystem {
             KineticState(0.0, 1000.0)
 
     }
+    val idle = InstantCommand{
+        KineticState(0.0,-300.0)
+    }
 }
