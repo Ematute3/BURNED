@@ -10,14 +10,14 @@ import kotlin.math.PI
  */
 object Hood : Subsystem {
 
-    private var servo = ServoEx("hood", 0.01)
+    private var hood = ServoEx("hood")
     private var position = 0.0
 
 
 
     override fun periodic() {
 
-        servo.position = position
+        hood.position = position
     }
 
     /**
@@ -41,10 +41,10 @@ object Hood : Subsystem {
     val close = InstantCommand {
         position = 0.0
     }
-    val half = InstantCommand{
+    val mid = InstantCommand{
         position = 0.5
     }
-    val open = InstantCommand{
+    val far = InstantCommand{
         position = 0.75
     }
 }

@@ -55,6 +55,7 @@ object Drive : Subsystem{
                 }
             }
         }
+      var lastKnown = Pose(0.0,0.0,0.0)
 
 
 

@@ -1,13 +1,10 @@
-package org.firstinspires.ftc.teamcode.ILT.Next
+package org.firstinspires.ftc.teamcode.ILT.Next.TeleOp
 
 import com.bylazar.telemetry.JoinedTelemetry
-
 import com.bylazar.telemetry.PanelsTelemetry
 import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import dev.nextftc.control.KineticState
 import dev.nextftc.core.commands.groups.ParallelGroup
-import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
@@ -19,23 +16,17 @@ import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.Drivetrain
 import org.firstinspires.ftc.teamcode.ILT.Next.Data.Alliance
-import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Shooter.Turret
-import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Drive.currentHeading
-import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Drive.currentX
-import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Drive.currentY
-import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Drive.poseValid
+import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Drive
 import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Gate
 import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Intake
 import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Shooter.FlyWheel
-import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Shooter.FlyWheel.controller
 import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Shooter.Hood
-import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Shooter.Turret.alliance
-import org.firstinspires.ftc.teamcode.ILT.Next.TestOp.TurretAimingTestOpMode.AimMode
-
+import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Shooter.Turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import java.lang.Math.toRadians
 
-@TeleOp(name = "Main TeleOp- RED", group = "Competition")
-class MainTeleOp : NextFTCOpMode() {
+@TeleOp(name = "Main TeleOp- BLUE", group = "Competition")
+class BlueTeleOp : NextFTCOpMode() {
 
     private val panelsTelemetry = PanelsTelemetry.ftcTelemetry
     private val joinedTelemetry = JoinedTelemetry(telemetry, panelsTelemetry)
@@ -54,19 +45,20 @@ class MainTeleOp : NextFTCOpMode() {
 
 
     override fun onInit() {
-        Alliance.BLUE
-        follower.pose = Pose(72.0, 72.0, 0.0)
+        follower.setStartingPose(Drive.lastKnown)
+    //follower.pose = Pose(40.7, 12.5, 90.0)
+        // webb blue start      follower.pose = Pose(3.0, 15.0, Math.toRadians(180.0))
     }
 
     override fun onStartButtonPressed() {
         PedroDriverControlled(
-            -Gamepads.gamepad1.leftStickY,
-            -Gamepads.gamepad1.leftStickX,
+            Gamepads.gamepad1.leftStickY,
+            Gamepads.gamepad1.leftStickX,
             -Gamepads.gamepad1.rightStickX,
-            false  // false = field centric, true = robot centric
+            false // false = field centric, true = robot centric
         ).schedule()
-        currentMode = AimModeTele.OFF
-        alliance = Alliance.RED
+        currentMode = AimModeTele.ODO
+        Turret.alliance = Alliance.BLUE
         bindControls()
     }
 
@@ -84,17 +76,22 @@ class MainTeleOp : NextFTCOpMode() {
 
 
 
-        Gamepads.gamepad1.dpadUp whenBecomesTrue Hood.open
-        Gamepads.gamepad1.dpadLeft whenBecomesTrue Hood.half
+        Gamepads.gamepad1.dpadUp whenBecomesTrue Hood.far
+        Gamepads.gamepad1.dpadLeft whenBecomesTrue Hood.mid
         Gamepads.gamepad1.dpadDown whenBecomesTrue Hood.close
 
 
-        Gamepads.gamepad1.square whenBecomesTrue {FlyWheel.setVelocity(1000.0)}
-        Gamepads.gamepad1.triangle whenBecomesTrue {FlyWheel.setVelocity(1300.0)}
-        Gamepads.gamepad1.cross whenBecomesTrue { FlyWheel.setVelocity(-500.0) }
+        Gamepads.gamepad1.square whenBecomesTrue { FlyWheel.setVelocity(1000.0)}
+        Gamepads.gamepad1.triangle whenBecomesTrue { FlyWheel.setVelocity(1300.0)}
+        Gamepads.gamepad1.cross whenBecomesTrue { FlyWheel.setVelocity(-800.0) }
         Gamepads.gamepad1.circle whenBecomesTrue { FlyWheel.setVelocity(1500.0) }
 
-        Gamepads.gamepad2.triangle whenBecomesTrue { follower.pose = Pose(0.0,0.0,0.0) }
+        Gamepads.gamepad2.triangle whenBecomesTrue {follower.pose =
+            Pose(144.0, 0.0, 180.0)
+        }
+        Gamepads.gamepad2.circle whenBecomesTrue { follower.pose =
+            Pose(36.0, 8.0, 90.0)}
+        Gamepads.gamepad2.square whenBecomesTrue {follower.pose = Pose(22.5, 123.5, toRadians(144.0))}
 
 
 
@@ -103,14 +100,14 @@ class MainTeleOp : NextFTCOpMode() {
     }
 
     override fun onUpdate() {
-        poseValid = true
+        Drive.poseValid = true
         currentMode = AimModeTele.ODO
-        currentX = follower.pose.x
-        currentY = follower.pose.y
-        currentHeading = follower.pose.heading
+        Drive.currentX = PedroComponent.Companion.follower.pose.x
+        Drive.currentY = PedroComponent.Companion.follower.pose.y
+        Drive.currentHeading = PedroComponent.Companion.follower.pose.heading
 
         when (currentMode) {
-            AimModeTele.OFF -> Turret.stop()
+            AimModeTele.OFF -> Turret.manual()
             AimModeTele.ODO -> Turret.aimWithOdometry()
         }
 
@@ -118,7 +115,7 @@ class MainTeleOp : NextFTCOpMode() {
 
 
     }
-    val reset = InstantCommand{
+    val reset = InstantCommand {
         ParallelGroup(
             Hood.close,
             Gate.close,

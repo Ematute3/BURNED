@@ -30,9 +30,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import java.lang.StrictMath.toRadians
 
 
-@Autonomous(name = "Pedro Auto 12 ball Blue")
+@Autonomous(name = "webb Blue")
 @Configurable
-class PedroBlueAutonomous : NextFTCOpMode() {
+class webbBlue : NextFTCOpMode() {
 
     private var tele = JoinedTelemetry(PanelsTelemetry.ftcTelemetry, telemetry)
     private lateinit var autoPath: AutoPath
@@ -52,7 +52,7 @@ class PedroBlueAutonomous : NextFTCOpMode() {
 
     override fun onInit() {
         // Mirrored Y: 144 - 123.5 = 20.5 | Mirrored Heading: -37 degrees
-        follower.setStartingPose(Pose(22.5, 123.5, toRadians(144.0)))
+        follower.setStartingPose(Pose(56.0, 8.0, toRadians(90.0)))
         autoPath = AutoPath()
         alliance = Alliance.BLUE // Set alliance to Blue
 
@@ -92,46 +92,35 @@ class PedroBlueAutonomous : NextFTCOpMode() {
            New Heading = -Old Heading
         */
 
-        private val start = Pose(22.0, 123.5, toRadians(144.0))
-
-        private val scorePose = Pose(48.0, 96.0, toRadians(144.0))
-        private val intakePose1 = Pose(15.4, 82.5, toRadians(180.0))
-        private val intakeCP1 = Pose(52.5,81.7 )
-
-        private val intakePose2 = Pose(12.8, 56.7, Math.toRadians(180.0))
-        private val intakeCP2 = Pose(61.5, 56.011)
-
-        private val intakePose3 = Pose(12.5, 34.8, Math.toRadians(180.0))
-        private val intakeCP3 = Pose(66.9, 26.0)
-
-        private val clearBot = Pose(68.9, 13.5)
-        private val sideBot = Pose(40.7, 12.5)
-
+        private val startPose = Pose(56.0, 8.0, Math.toRadians(90.0))
+        private val intake = Pose(0.0, 15.0, Math.toRadians(180.0))
+        private val scorePose = Pose(57.5, 12.0, Math.toRadians(110.0))
         val pathCount = 9
 
         fun next(): SequentialGroup {
             val current = index++
             return when (current) {
                 0 -> SequentialGroup( // firstScore
-                    InstantCommand{ FlyWheel.setVelocity(1000.0)},
+                    InstantCommand{ FlyWheel.setVelocity(1500.0)},
                     Gate.open,
-                    InstantCommand { Hood.setPosition(0.5) },
-                    Delay(0.2),
+                    InstantCommand { Hood.setPosition(0.75) },
+                    Delay(2.0),
                     FollowPath(
                         follower.pathBuilder()
-                            .addPath(BezierLine(start, scorePose))
-                            .setLinearHeadingInterpolation(toRadians(144.0), toRadians(144.0))
+                            .addPath(BezierLine(startPose, scorePose))
+                            .setLinearHeadingInterpolation(toRadians(90.0), toRadians(110.0))
                             .build()
                     ),
                     ParallelGroup(
-                        Intake.run,
+                        Intake.reverse,
+                        Delay(0.05),
+                        Intake.runSlow,
                         Gate.open,
-                        InstantCommand { Hood.setPosition(0.5) }
+                        InstantCommand { Hood.setPosition(0.75) }
                     ),
-                    Delay(1.5),
+                    Delay(2.5),
                     ParallelGroup(
                         Gate.close,
-
                         Intake.stop
                     ),
                     InstantCommand { autoPath.next().schedule() }
@@ -141,35 +130,38 @@ class PedroBlueAutonomous : NextFTCOpMode() {
                     Intake.run,
                     FollowPath(
                         follower.pathBuilder()
-                            .addPath(BezierCurve(scorePose, intakeCP1, intakePose1))
+                            .addPath(BezierCurve(scorePose, intake))
                             .setConstantHeadingInterpolation(Math.toRadians(180.0))
                             .build()
                     ),
-                    Delay(0.8),
+                    Delay(1.5),
                     Intake.reverse,
-                    Delay(0.025),
+                    Delay(0.0015),
                     Intake.stop,
                     InstantCommand { autoPath.next().schedule() }
                 )
 
                 2 -> SequentialGroup( // firstIntakeLaunch
                     ParallelGroup(
-                        FlyWheel.close,
-                        InstantCommand { Hood.setPosition(0.5) }
+                        InstantCommand { FlyWheel.setVelocity(1500.0) },
+                        InstantCommand { Hood.setPosition(0.75) }
                     ),
                     FollowPath(
                         follower.pathBuilder()
-                            .addPath(BezierCurve(intakePose1, scorePose))
-                            .setConstantHeadingInterpolation(Math.toRadians(144.0))
+                            .addPath(BezierCurve(intake, scorePose))
+                            .setConstantHeadingInterpolation(Math.toRadians(110.0))
                             .build()
                     ),
                     ParallelGroup(
+                        Intake.reverse,
+                        Delay(0.0125),
                         InstantCommand{Gate.setPosition(0.0)},
-                        Intake.run
+                        Intake.runSlow
                     ),
-                    Delay(1.5),
+                    Delay(2.5),
                     ParallelGroup(
                         Gate.close,
+
                         Intake.stop
                     ),
                     InstantCommand { autoPath.next().schedule() }
@@ -179,33 +171,35 @@ class PedroBlueAutonomous : NextFTCOpMode() {
                     Intake.run,
                     FollowPath(
                         follower.pathBuilder()
-                            .addPath(BezierCurve(scorePose, intakeCP2, intakePose2))
+                            .addPath(BezierCurve(scorePose, intake))
                             .setConstantHeadingInterpolation(Math.toRadians(180.0))
                             .build()
                     ),
-                    Delay(0.8),
+                    Delay(1.5),
                     Intake.reverse,
-                    Delay(0.025),
+                    Delay(0.0015),
                     Intake.stop,
                     InstantCommand { autoPath.next().schedule() }
                 )
 
                 4 -> SequentialGroup( // secondIntakeLaunch
                     ParallelGroup(
-                        FlyWheel.close,
-                        InstantCommand { Hood.setPosition(0.5) }
+                        InstantCommand { FlyWheel.setVelocity(1500.0) },
+                        InstantCommand { Hood.setPosition(0.75) }
                     ),
                     FollowPath(
                         follower.pathBuilder()
-                            .addPath(BezierCurve(intakePose2, intakeCP2, scorePose))
-                            .setConstantHeadingInterpolation(Math.toRadians(144.0))
+                            .addPath(BezierCurve(intake, scorePose))
+                            .setConstantHeadingInterpolation(Math.toRadians(180.0))
                             .build()
                     ),
                     ParallelGroup(
+                        Intake.reverse,
+                        Delay(0.0125),
                         InstantCommand{Gate.setPosition(0.0)},
-                        Intake.run
+                        Intake.runSlow
                     ),
-                    Delay(1.5),
+                    Delay(2.5),
                     ParallelGroup(
                         Gate.close,
                         Intake.stop
@@ -217,11 +211,11 @@ class PedroBlueAutonomous : NextFTCOpMode() {
                     Intake.run,
                     FollowPath(
                         follower.pathBuilder()
-                            .addPath(BezierCurve(scorePose, intakeCP3, intakePose3))
+                            .addPath(BezierCurve(scorePose, intake))
                             .setConstantHeadingInterpolation(Math.toRadians(180.0))
                             .build()
                     ),
-                    Delay(0.8),
+                    Delay(1.5),
                     Intake.reverse,
                     Delay(0.00125),
                     Intake.stop,
@@ -231,20 +225,22 @@ class PedroBlueAutonomous : NextFTCOpMode() {
 
                 6 -> SequentialGroup( // thirdIntakeLaunch
                     ParallelGroup(
-                        FlyWheel.close,
-                        InstantCommand { Hood.setPosition(0.5) }
+                        InstantCommand { FlyWheel.setVelocity(1500.0) },
+                        InstantCommand { Hood.setPosition(0.75) }
                     ),
                     FollowPath(
                         follower.pathBuilder()
-                            .addPath(BezierCurve(intakePose3, scorePose))
-                            .setConstantHeadingInterpolation(Math.toRadians(144.0))
+                            .addPath(BezierCurve(intake, scorePose))
+                            .setConstantHeadingInterpolation(Math.toRadians(110.0))
                             .build()
                     ),
                     ParallelGroup(
+                        Intake.reverse,
+                        Delay(0.0125),
                         Gate.open,
-                        Intake.run
+                        Intake.runSlow
                     ),
-                    Delay(1.5),
+                    Delay(2.5),
                     ParallelGroup(
                         Gate.close,
                         Intake.stop,
@@ -253,19 +249,41 @@ class PedroBlueAutonomous : NextFTCOpMode() {
                     InstantCommand { autoPath.next().schedule() }
                 )
 
-                7 -> SequentialGroup( // park: both segments chained
+                7 -> SequentialGroup( // thirdIntake
+                    Intake.run,
                     FollowPath(
                         follower.pathBuilder()
-                            .addPath(BezierLine(scorePose, clearBot))
-                            .setLinearHeadingInterpolation(toRadians(144.0), toRadians(144.0))
+                            .addPath(BezierCurve(scorePose, intake))
+                            .setConstantHeadingInterpolation(Math.toRadians(180.0))
                             .build()
                     ),
-                    FollowPath(
-                        follower.pathBuilder()
-                            .addPath(BezierLine(clearBot, sideBot))
-                            .setLinearHeadingInterpolation(toRadians(90.0), toRadians(90.0))
-                            .build()
-                    )
+                    Delay(1.5),
+                    Intake.reverse,
+                    Delay(0.00125),
+                    Intake.stop,
+                    FlyWheel.off,
+
+                    InstantCommand { autoPath.next().schedule() }
+                )
+
+                8 -> SequentialGroup( // thirdIntakeLaunch
+                    ParallelGroup(
+                        InstantCommand { FlyWheel.setVelocity(1500.0) },
+                        InstantCommand { Hood.setPosition(0.75) }
+                    ),
+                    ParallelGroup(
+                        Intake.reverse,
+                        Delay(0.0125),
+                        Gate.open,
+                        Intake.runSlow
+                    ),
+                    Delay(2.5),
+                    ParallelGroup(
+                        Gate.close,
+                        Intake.stop,
+                        FlyWheel.off
+                    ),
+                    InstantCommand { autoPath.next().schedule() }
                 )
 
                 else -> SequentialGroup()

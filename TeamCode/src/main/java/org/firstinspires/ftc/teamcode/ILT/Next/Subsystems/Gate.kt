@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.ILT.Next.Subsystems
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.impl.ServoEx
-
+import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Shooter.Hood
 
 
 /**
@@ -24,7 +24,9 @@ object Gate : Subsystem {
 
 
     // ==================== COMMANDS ====================
-
+    fun setPosition(newPosition: Double) {
+        position = newPosition.coerceIn(0.0, 1.0)
+    }
     val open = InstantCommand {
         position = 0.0
     }

@@ -68,17 +68,21 @@ object FlyWheel : Subsystem {
             FlyWheel.setMotorPowers(shooterPower.get())
         }
     }
-    val maxShoot = InstantCommand{
+    val maxAuto = InstantCommand{
+        controller.goal =
+            KineticState(0.0, 1600.0)
+    }
+    val max = InstantCommand{
         controller.goal =
             KineticState(0.0, 1500.0)
 
     }
-    val midShoot = InstantCommand{
+    val mid = InstantCommand{
         controller.goal =
             KineticState(0.0, 1250.0)
 
     }
-    val closeShoot = InstantCommand{
+    val close= InstantCommand{
         controller.goal =
             KineticState(0.0, 1000.0)
 
