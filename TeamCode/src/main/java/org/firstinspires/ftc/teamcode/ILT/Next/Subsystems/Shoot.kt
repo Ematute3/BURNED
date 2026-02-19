@@ -8,8 +8,9 @@ import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.commands.utility.InstantCommand
 import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Gate
-import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Intake
-import org.firstinspires.ftc.teamcode.Util.ROBOT
+
+import org.firstinspires.ftc.teamcode.ILT.Next.Data.ROBOT
+import org.firstinspires.ftc.teamcode.subsystems.lower.Intake
 
 // FIX: Not a Subsystem — this is purely a command factory with no hardware of its own.
 // Registering it as a Subsystem was wasteful and misleading.
@@ -30,12 +31,12 @@ object Shoot {
     fun shootCommand(waitTime: Double): Command =
         SequentialGroup(
             InstantCommand {
-                Intake.run().schedule()
+               Intake.On(1.0)
                 Gate.open
             },
             Delay(waitTime),
             InstantCommand {
-                Intake.stop().schedule()
+                Intake.off
                 Gate.close
             }
         )

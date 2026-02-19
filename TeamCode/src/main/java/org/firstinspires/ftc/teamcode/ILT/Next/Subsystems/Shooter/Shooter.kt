@@ -8,7 +8,7 @@ import dev.nextftc.core.subsystems.SubsystemGroup
 import org.firstinspires.ftc.teamcode.Systems.ShooterSubsystems.Flywheel
 import org.firstinspires.ftc.teamcode.Systems.ShooterSubsystems.FlywheelState
 
-import org.firstinspires.ftc.teamcode.Util.ROBOT
+import org.firstinspires.ftc.teamcode.ILT.Next.Data.ROBOT
 import org.firstinspires.ftc.teamcode.nextFtc.Subsystem.Shooter.TurretMech.Turret
 
 object Shooter : SubsystemGroup(Turret, Flywheel) {
@@ -91,7 +91,7 @@ object Shooter : SubsystemGroup(Turret, Flywheel) {
 
     private fun updateTurret() {
         val targetPose = when {
-            ROBOT.inCloseZone() -> ROBOT.currAlliance.goalPoses.turretGoalPoseClose
+            ROBOT.closeLaunchZone() -> ROBOT.currAlliance.goalPoses.turretGoalPoseClose
             ROBOT.inFarZone()   -> ROBOT.currAlliance.goalPoses.turretGoalPoseFar
             else                -> ROBOT.currAlliance.goalPoses.flywheelGoalPose
         }
