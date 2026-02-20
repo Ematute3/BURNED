@@ -55,8 +55,31 @@ object Drive : Subsystem{
                 }
             }
         }
+    /*
+    bro jst any frickin variable in the frickin object or toplevel
+jst put a random file, and put tis code in ok:
+`
+data object PoseSaving {
+  val savedPose = Pose()
+}
+nothing
+or anything u want it to defaulot to
+and then:
+override fun onStop() {
+  PoseSaving.savedPose = follower.pose
+}
+
+and then in teleop do:
+follower.setStartinPose(PoseSaving.savedPose)
+and thats it
+     */
       var lastKnown = Pose(0.0,0.0,0.0)
 
-
+    override fun onStop() {
+        PoseSaving.savedPose = follower.pose
+    }
 
     }
+data object PoseSaving{
+    val savedPose = Pose()
+}

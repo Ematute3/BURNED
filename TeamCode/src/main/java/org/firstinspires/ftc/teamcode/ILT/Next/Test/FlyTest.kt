@@ -7,7 +7,8 @@ import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Shooter.FlyWheel
+import org.firstinspires.ftc.teamcode.subsystem.FlyWheel
+
 import java.util.Collections.frequency
 
 @Configurable

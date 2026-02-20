@@ -3,7 +3,8 @@ package org.firstinspires.ftc.teamcode.ILT.Next.Subsystems
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
-import org.firstinspires.ftc.teamcode.Systems.ShooterSubsystems.FlyWheel
+import org.firstinspires.ftc.teamcode.subsystem.FlyWheel
+
 import org.firstinspires.ftc.teamcode.subsystem.Hood
 import org.opencv.objdetect.HOGDescriptor
 import java.time.Instant
