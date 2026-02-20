@@ -1,50 +1,49 @@
-package org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Shooter
+package org.firstinspires.ftc.teamcode.subsystem
 
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.impl.ServoEx
-import kotlin.math.PI
 
 /**
- * Gate subsystem for controlling ball flow to shooter.
+ * Hood subsystem for adjusting shooter angle.
  */
 object Hood : Subsystem {
-
     private var hood = ServoEx("hood")
-    private var position = 0.0
 
-
+    private var targetPosition = 0.0
 
     override fun periodic() {
-
-        hood.position = position
+        hood.position = targetPosition
     }
 
     /**
-     * Set gate position (0.0 = open, 1.0 = closed, typically).
+     * Set hood position (0.0 to 1.0)
      */
     fun setPosition(newPosition: Double) {
-        position = newPosition.coerceIn(0.0, 1.0)
+        targetPosition = newPosition.coerceIn(0.0, 1.0)
     }
 
     /**
-     * Check if gate is open.
+     * Get current position
      */
+    fun getPosition(): Double = targetPosition
 
+    // ==================== PRESETS ====================
 
-    // ==================== COMMANDS ====================
+    val full = InstantCommand { targetPosition = 1.0 }
+    val close = InstantCommand { targetPosition = 0.0 }
+    val mid = InstantCommand { targetPosition = 0.5 }
+    val far = InstantCommand { targetPosition = 0.75 }
 
-    val full = InstantCommand {
-        position = 1.0
-    }
-
-    val close = InstantCommand {
-        position = 0.0
-    }
-    val mid = InstantCommand{
-        position = 0.5
-    }
-    val far = InstantCommand{
-        position = 0.75
+    /**
+     * Set based on distance zone
+     */
+    fun setForZone(zone: String) {
+        when (zone) {
+            "CLOSE" -> setPosition(0.0)
+            "MID" -> setPosition(0.5)
+            "FAR" -> setPosition(0.75)
+            else -> setPosition(0.5)
+        }
     }
 }
