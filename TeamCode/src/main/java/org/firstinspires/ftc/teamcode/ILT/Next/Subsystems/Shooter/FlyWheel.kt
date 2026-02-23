@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystem
 
 import com.bylazar.configurables.annotations.Configurable
+import com.bylazar.telemetry.JoinedTelemetry
 import com.bylazar.telemetry.PanelsTelemetry
 import com.qualcomm.robotcore.hardware.VoltageSensor
 import dev.nextftc.control.ControlSystem
@@ -13,13 +14,14 @@ import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.ftc.ActiveOpMode
+import dev.nextftc.ftc.ActiveOpMode.telemetry
 import java.util.function.Supplier
 
 @Configurable
 object FlyWheel : Subsystem {
 
     // Hardware
-    private lateinit var motor1: MotorEx
+    lateinit var motor1: MotorEx
     private lateinit var motor2: MotorEx
 
     // FIX: lazy so hardware map is available at access time
@@ -30,8 +32,8 @@ object FlyWheel : Subsystem {
     // ==================== TUNABLE COEFFICIENTS ====================
     // Changes to these take effect on the next periodic() call because
     // the controller is rebuilt from them each loop.
-    @JvmField var ffCoefficients  = BasicFeedforwardParameters(0.003, 0.08, 0.0)
-    @JvmField var pidCoefficients = PIDCoefficients(0.009, 0.0, 0.01)
+    @JvmField var ffCoefficients  = BasicFeedforwardParameters(0.001, 0.005, 0.0)
+    @JvmField var pidCoefficients = PIDCoefficients(0.011, 0.0, 0.01)
 
     // FIX: controller is now rebuilt in periodic() using the current coefficients,
     // so @JvmField / dashboard edits to ffCoefficients / pidCoefficients take effect
@@ -45,13 +47,13 @@ object FlyWheel : Subsystem {
 
     // ==================== VOLTAGE COMPENSATION ====================
     private const val V_NOMINAL = 12.0
-    private var voltFilt = 12.0
+    var voltFilt = 12.0
     private const val ALPHA_VOLT = 0.08
 
     @JvmField var voltageCompEnabled = true
 
     // ==================== STATE ====================
-    private var targetVelocity = 0.0
+    var targetVelocity = 0.0
 
     // ==================== INITIALIZATION ====================
     override fun initialize() {
@@ -116,17 +118,18 @@ object FlyWheel : Subsystem {
             rawPower.coerceIn(-0.85, 0.85)
         }
 
+
         setMotorPowers(finalPower)
 
         // ── Panels telemetry ──────────────────────────────────────────
-        PanelsTelemetry.telemetry.addData("Flywheel/Power",        "%.3f".format(finalPower))
-        PanelsTelemetry.telemetry.addData("Flywheel/Target Vel",   "%.1f".format(targetVelocity))
-        PanelsTelemetry.telemetry.addData("Flywheel/Actual Vel",   "%.1f".format(motor1.velocity))
-        PanelsTelemetry.telemetry.addData("Flywheel/Vel Error",    "%.1f".format(targetVelocity - motor1.velocity))
-        PanelsTelemetry.telemetry.addData("Flywheel/At Target",    isAtTarget())
-        PanelsTelemetry.telemetry.addData("Flywheel/Voltage",      "%.2f".format(voltFilt))
-        PanelsTelemetry.telemetry.addData("Flywheel/Volt Ratio",   "%.3f".format(voltageRatio))
-        PanelsTelemetry.telemetry.addData("Flywheel/Volt Comp On", voltageCompEnabled)
+        telemetry.addData("Flywheel/Power",        "%.3f".format(finalPower))
+        telemetry.addData("Flywheel/Target Vel",   "%.1f".format(targetVelocity))
+        telemetry.addData("Flywheel/Actual Vel",   "%.1f".format(motor1.velocity))
+       telemetry.addData("Flywheel/Vel Error",    "%.1f".format(targetVelocity - motor1.velocity))
+        telemetry.addData("Flywheel/At Target",    isAtTarget())
+        telemetry.addData("Flywheel/Voltage",      "%.2f".format(voltFilt))
+        telemetry.addData("Flywheel/Volt Ratio",   "%.3f".format(voltageRatio))
+        telemetry.addData("Flywheel/Volt Comp On", voltageCompEnabled)
     }
 
     // ==================== COMMANDS ====================
@@ -137,11 +140,11 @@ object FlyWheel : Subsystem {
      */
     class Manual(private val shooterPower: Supplier<Double>) : Command() {
         override val isDone = false
-        init { requires(Flywheel) }
+        init { requires(FlyWheel) }
         override fun update() {
-            val voltageRatio = if (Flywheel.voltageCompEnabled) V_NOMINAL / Flywheel.voltFilt else 1.0
+            val voltageRatio = if (FlyWheel.voltageCompEnabled) V_NOMINAL / FlyWheel.voltFilt else 1.0
             val compensated = (shooterPower.get() * voltageRatio).coerceIn(-0.85, 0.85)
-            Flywheel.setMotorPowers(compensated)
+            FlyWheel.setMotorPowers(compensated)
         }
     }
 
@@ -153,5 +156,5 @@ object FlyWheel : Subsystem {
 
     fun getVelocity(): Double = motor1.velocity
 
-    fun getTargetVelocity(): Double = targetVelocity
+
 }

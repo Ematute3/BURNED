@@ -75,9 +75,9 @@ and thats it
      */
       var lastKnown = Pose(0.0,0.0,0.0)
 
-    override fun onStop() {
-        PoseSaving.savedPose = follower.pose
-    }
+    //override fun onStop() {
+    //    PoseSaving.savedPose = follower.pose
+   // }
 
     }
 data object PoseSaving{

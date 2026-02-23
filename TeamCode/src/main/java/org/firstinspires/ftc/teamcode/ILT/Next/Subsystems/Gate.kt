@@ -9,6 +9,8 @@ import dev.nextftc.hardware.impl.ServoEx
 /**
  * Gate subsystem for controlling ball flow to shooter.
  */
+// gate control 2
+//
 object Gate : Subsystem {
 
     private var servo = ServoEx("gate", 0.01)

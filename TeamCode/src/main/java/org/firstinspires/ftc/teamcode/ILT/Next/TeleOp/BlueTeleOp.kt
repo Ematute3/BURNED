@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ILT.Next.TeleOp
 
+import com.bylazar.panels.Panels
 import com.bylazar.telemetry.JoinedTelemetry
 import com.bylazar.telemetry.PanelsTelemetry
 import com.pedropathing.geometry.Pose
@@ -24,6 +25,11 @@ import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Intake
 import org.firstinspires.ftc.teamcode.ILT.Next.Subsystems.Shooter.Turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.subsystem.FlyWheel
+import org.firstinspires.ftc.teamcode.subsystem.FlyWheel.isAtTarget
+import org.firstinspires.ftc.teamcode.subsystem.FlyWheel.motor1
+import org.firstinspires.ftc.teamcode.subsystem.FlyWheel.targetVelocity
+import org.firstinspires.ftc.teamcode.subsystem.FlyWheel.voltFilt
+import org.firstinspires.ftc.teamcode.subsystem.FlyWheel.voltageCompEnabled
 import org.firstinspires.ftc.teamcode.subsystem.Hood
 import java.lang.Math.toRadians
 
@@ -47,7 +53,8 @@ class BlueTeleOp : NextFTCOpMode() {
 
 
     override fun onInit() {
-        follower.setStartingPose(Drive.lastKnown)
+        //follower.setStartingPose(Drive.lastKnown)
+        follower.pose = Pose(72.0,72.0,0.0)
     //follower.pose = Pose(40.7, 12.5, 90.0)
         // webb blue start      follower.pose = Pose(3.0, 15.0, Math.toRadians(180.0))
     }
@@ -86,7 +93,7 @@ class BlueTeleOp : NextFTCOpMode() {
         Gamepads.gamepad1.square whenBecomesTrue { FlyWheel.setVelocity(1000.0)}
         Gamepads.gamepad1.triangle whenBecomesTrue { FlyWheel.setVelocity(1300.0)}
         Gamepads.gamepad1.cross whenBecomesTrue { FlyWheel.setVelocity(-800.0) }
-        Gamepads.gamepad1.circle whenBecomesTrue { FlyWheel.setVelocity(1500.0) }
+        Gamepads.gamepad1.circle whenBecomesTrue { FlyWheel.setVelocity(2000.0) }
 
         Gamepads.gamepad2.triangle whenBecomesTrue {follower.pose =
             Pose(144.0, 0.0, 180.0)
@@ -102,6 +109,14 @@ class BlueTeleOp : NextFTCOpMode() {
     }
 
     override fun onUpdate() {
+
+        PanelsTelemetry.telemetry.addData("Flywheel/Target Vel",   "%.1f".format(targetVelocity))
+        PanelsTelemetry.telemetry.addData("Flywheel/Actual Vel",   "%.1f".format(motor1.velocity))
+        PanelsTelemetry.telemetry.addData("Flywheel/Vel Error",    "%.1f".format(targetVelocity - motor1.velocity))
+        PanelsTelemetry.telemetry.addData("Flywheel/At Target",    isAtTarget())
+        PanelsTelemetry.telemetry.addData("Flywheel/Voltage",      "%.2f".format(voltFilt))
+        PanelsTelemetry.telemetry.addData("Flywheel/Volt Comp On", voltageCompEnabled)
+      joinedTelemetry.update()
         Drive.poseValid = true
         currentMode = AimModeTele.ODO
         Drive.currentX = PedroComponent.Companion.follower.pose.x

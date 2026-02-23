@@ -22,8 +22,8 @@ object Turret : Subsystem {
     @JvmField var alliance = Alliance.RED
 
     var controller = controlSystem {
-        posPid(0.3, 0.0, 0.05)
-        basicFF(0.25, 0.0, 0.0)
+        posPid(0.3, 0.0, 0.03)
+        basicFF(0.25, 0.0, 0.01)
     }
 
     var manualPower = 0.0
