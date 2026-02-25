@@ -93,7 +93,7 @@ class BlueTeleOp : NextFTCOpMode() {
         Gamepads.gamepad1.square whenBecomesTrue { FlyWheel.setVelocity(1000.0)}
         Gamepads.gamepad1.triangle whenBecomesTrue { FlyWheel.setVelocity(1300.0)}
         Gamepads.gamepad1.cross whenBecomesTrue { FlyWheel.setVelocity(-800.0) }
-        Gamepads.gamepad1.circle whenBecomesTrue { FlyWheel.setVelocity(2000.0) }
+        Gamepads.gamepad1.circle whenBecomesTrue { FlyWheel.setVelocity(1900.0) }
 
         Gamepads.gamepad2.triangle whenBecomesTrue {follower.pose =
             Pose(144.0, 0.0, 180.0)

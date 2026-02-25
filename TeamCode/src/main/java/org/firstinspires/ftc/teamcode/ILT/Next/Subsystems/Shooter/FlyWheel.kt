@@ -32,8 +32,8 @@ object FlyWheel : Subsystem {
     // ==================== TUNABLE COEFFICIENTS ====================
     // Changes to these take effect on the next periodic() call because
     // the controller is rebuilt from them each loop.
-    @JvmField var ffCoefficients  = BasicFeedforwardParameters(0.001, 0.005, 0.0)
-    @JvmField var pidCoefficients = PIDCoefficients(0.011, 0.0, 0.01)
+    @JvmField var ffCoefficients  = BasicFeedforwardParameters(0.001, 0.006, 0.0)
+    @JvmField var pidCoefficients = PIDCoefficients(0.015, 0.00, 0.01)
 
     // FIX: controller is now rebuilt in periodic() using the current coefficients,
     // so @JvmField / dashboard edits to ffCoefficients / pidCoefficients take effect
@@ -89,7 +89,7 @@ object FlyWheel : Subsystem {
     val max      = InstantCommand { setVelocity(1500.0) }
     val maxFar  = InstantCommand { setVelocity(1600.0) }
     val idle     = InstantCommand { setVelocity(-300.0) }
-   val runHigh  = InstantCommand { setVelocity(2000.0) }
+   val runHigh  = InstantCommand { setVelocity(1900.0) }
 
     // ==================== MOTOR CONTROL ====================
 
